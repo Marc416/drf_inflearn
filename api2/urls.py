@@ -17,13 +17,15 @@
 # ]
 
 # GenericAPIView 활용하기
-from django.urls import path, include
+from django.urls import path
 
 from api2 import views
 
 urlpatterns = [
     # name을 drf명명법을 따라 표기
-    path('post', include(views.PostListAPIView.as_view(), names='post-list')),
-    path('post/<int:pk>', include(views.PostRetrieveAPIView.as_view(), names='post-detail')),
-    path('comment', include(views.CommentCreateAPIView.as_view(), names='comment-list')),
+    # defaultrouter를 사용시 root url인 'api2/' 가 만들어짐. 하지만 GenericView를 이용했기 때문에
+    # 루트라 라우터는 만들어지지 않음
+    path('post/', views.PostListAPIView.as_view(), name='post-list'),
+    path('post/<int:pk>/', views.PostRetrieveAPIView.as_view(), name='post-detail'),
+    path('comment/', views.CommentCreateAPIView.as_view(), name='comment-list'),
 ]
