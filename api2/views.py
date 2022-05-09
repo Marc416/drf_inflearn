@@ -29,7 +29,7 @@
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 
-from api2.serializers import PostListSerializer, CommentSerializer, PostRetrieveSerializer
+from api2.serializers import PostListSerializer, CommentSerializer, PostRetrieveSerializer, PostLikeSerializer
 from blog.models import Post, Comment
 
 
@@ -45,7 +45,7 @@ class PostRetrieveAPIView(RetrieveAPIView):
 
 class PostLikeAPIView(UpdateAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostListSerializer
+    serializer_class = PostLikeSerializer
 
     # Put 과 Patch의 차이점:
     # Blank true가 아닌 필드는 필수 필드이고 필수 필드는 Put 메서드실행시 필요.
@@ -66,7 +66,7 @@ class PostLikeAPIView(UpdateAPIView):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
-        return Response(serializer.data)
+        return Response(data['like'])
 
 
 class CommentCreateAPIView(CreateAPIView):
