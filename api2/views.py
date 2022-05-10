@@ -28,9 +28,10 @@
 # api2/post[GET], api2/post/pk[GET], api2/comment[POST] 를 변경해보기
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from api2.serializers import PostListSerializer, CommentSerializer, PostRetrieveSerializer, PostLikeSerializer
-from blog.models import Post, Comment
+from api2.serializers import PostListSerializer, CommentSerializer, PostRetrieveSerializer, PostLikeSerializer, CateTagSerializer
+from blog.models import Post, Comment, Category, Tag
 
 
 class PostListAPIView(ListAPIView):
@@ -72,3 +73,22 @@ class PostLikeAPIView(UpdateAPIView):
 class CommentCreateAPIView(CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+
+class CateTagListAPIView(APIView):
+    """
+    GenericAPIView 는 하나의 테이블을 처리하는 APIView,
+    DB를 처리하기 위한 클래스임.
+    DB처리를하기위한 메서드를 오버라이드해서 사용할것이 아니라면 APIView를 상속하는게 낫다(새로처음부터뭔가 만들것이라면)
+    """
+
+    def get(self, request, *args, **kwargs):
+        category_list = Category.objects.all()
+        tag_list = Tag.objects.all()
+        data = {
+            'cateList': category_list,
+            'tagList': tag_list
+        }
+        # 인스턴스 인자는 시리얼라이저와 같아야 한다
+        serializer = CateTagSerializer(instance=data)
+        return Response(serializer.data)
