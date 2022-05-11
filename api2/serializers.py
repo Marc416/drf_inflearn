@@ -12,6 +12,30 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PostListSerializer(serializers.ModelSerializer):
+    """
+       {
+           "postList": [
+               {
+                 "id": 1,
+                 "title": "Django 4.x Technical Board Election Results",
+                 "image": "/media/blog/2021/06/05-full.jpg",
+                 "like": 0,
+                 "category": "IT"
+               },
+           ],
+           "pageCnt": 2,
+           "curPage": 1
+       }
+       이번에 필요한 것 : postList, pagination
+       """
+
+    # 카테고리 테이블의 네임 컬럼을 보여주겠다
+    category = serializers.CharField(source='category.name')
+    """
+        category = PrimaryKeyRelatedField(allow_null=True, queryset=Category.objects.all(), required=False)
+        카테고리가 자동으로 프라이머리 키로 잡혀있어서 프라이머리 키로 나오고 있었음
+    """
+
     class Meta:
         model = Post
         fields = ['id', 'title', 'image', 'like', 'category']
