@@ -48,6 +48,9 @@ class PostLikeSerializer(serializers.ModelSerializer):
 
 
 class PostRetrieveSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
+    tags = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Post
         exclude = ['create_dt']

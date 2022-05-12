@@ -43,6 +43,7 @@ class PostListAPIView(ListAPIView):
         Extra context provided to the serializer class.
         """
         return {
+            # 상속에 속성에 따라 request를 None 처리하면 Url이 상대 url로 나오게됨
             'request': None,
             'format': self.format_kwarg,
             'view': self
@@ -70,6 +71,17 @@ def get_prev_next(instance):
 class PostRetrieveAPIView(RetrieveAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializerDetail
+
+    def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
+        return {
+            # 상속에 속성에 따라 request를 None 처리하면 Url이 상대 url로 나오게됨
+            'request': None,
+            'format': self.format_kwarg,
+            'view': self
+        }
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
