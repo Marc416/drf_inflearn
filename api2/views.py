@@ -30,7 +30,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView,
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api2.serializers import PostListSerializer, CommentSerializer, PostRetrieveSerializer, PostLikeSerializer, CateTagSerializer
+from api2.serializers import PostListSerializer, CommentSerializer, PostRetrieveSerializer, PostLikeSerializer, CateTagSerializer, PostSerializerDetail
 from blog.models import Post, Comment, Category, Tag
 
 
@@ -49,9 +49,43 @@ class PostListAPIView(ListAPIView):
         }
 
 
+# class PostRetrieveAPIView(RetrieveAPIView):
+#     queryset = Post.objects.all()
+#     serializer_class = PostRetrieveSerializer
+
+def get_prev_next(instance):
+    try:
+        prev = instance.get_previous_by_update_dt()
+    except instance.DoesNotExist:
+        # exception은 인스턴스나 모델에 붙여서 사용
+        prev = None
+
+    try:
+        next_ = instance.get_next_by_update_dt()
+    except instance.DoesNotExist:
+        next_ = None
+    return prev, next_
+
+
 class PostRetrieveAPIView(RetrieveAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostRetrieveSerializer
+    serializer_class = PostSerializerDetail
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # 장고에서 기본으로 제공해주는 인스턴 : 해당인스턴스 앞뒤를 부름
+        prevInstance, nextInstance = get_prev_next(instance=instance)
+        commentList = instance.comment_set.all()
+        data = {
+            'post': instance,
+            'prevPost': prevInstance,
+            'nextPost': nextInstance,
+            'commentList': commentList,
+
+        }
+        serializer = self.get_serializer(instance=data)
+        # 직렬화는 serializer.data 할때 직렬화 진행됨
+        return Response(serializer.data)
 
 
 # class PostLikeAPIView(UpdateAPIView):
